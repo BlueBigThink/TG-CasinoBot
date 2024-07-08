@@ -210,7 +210,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     fullName = "{} {}".format(firstName, lastName)
     isBot = userInfo['is_bot']
 
-    wallet = await getWallet(userId, userName, fullName, isBot, g_ETH_Contract)
+    wallet = await getWallet(userId, userName, fullName, isBot, g_BSC_Contract)
+    # wallet = await getWallet(userId, userName, fullName, isBot, g_ETH_Contract)
 
     global g_UserStatus
 
@@ -290,8 +291,10 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     wallet = await readFieldsWhereStr("tbl_users", "Wallet", kind)
 
     address = wallet[0][0]
-    eth_amount = await getBalance(address, g_ETH_Web3, userId, 0)
-    token_amount = await getBalance(address, g_ETH_Web3, userId, 1)
+    eth_amount = 0
+    token_amount = 0
+    # eth_amount = await getBalance(address, g_ETH_Web3, userId, 0)
+    # token_amount = await getBalance(address, g_ETH_Web3, userId, 1)
     bnb_amount = await getBalance(address, g_BSC_Web3, userId, 2)
 
     keyboard = [
@@ -300,7 +303,7 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     await update.message.reply_text(
-        f"@{userName}'s wallet\nAddress: {address}\nETH : {eth_amount}\nTOKEN : {token_amount}",
+        f"@{userName}'s wallet\nAddress : {address}\nETH : {eth_amount}\nBNB : {bnb_amount}\nTOKEN : {token_amount}",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -319,8 +322,10 @@ async def _wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     userName = await readFieldsWhereStr("tbl_users", "UserName", kind)
     userName = userName[0][0]
 
-    eth_amount = await getBalance(address, g_ETH_Web3, userId, 0)
-    token_amount = await getBalance(address, g_ETH_Web3, userId, 1)
+    eth_amount = 0
+    token_amount = 0
+    # eth_amount = await getBalance(address, g_ETH_Web3, userId, 0)
+    # token_amount = await getBalance(address, g_ETH_Web3, userId, 1)
     bnb_amount = await getBalance(address, g_BSC_Web3, userId, 2)
 
     keyboard = [
@@ -329,7 +334,7 @@ async def _wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     await query.message.edit_text(
-        f"@{userName}'s wallet\nAddress : {address}\nETH : {eth_amount}\nTOKEN : {token_amount}",
+        f"@{userName}'s wallet\nAddress : {address}\nETH : {eth_amount}\nBNB : {bnb_amount}\nTOKEN : {token_amount}",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -1144,6 +1149,7 @@ async def eth_bnb_dlg(update: Update, msg: str) -> int:
     keyboard = [
         [
             InlineKeyboardButton("ETH", callback_data="funcETH"),
+            InlineKeyboardButton("BNB", callback_data="funcBNB"),
             InlineKeyboardButton("TOKEN", callback_data="funcToken"),
         ],
         [
@@ -1162,6 +1168,7 @@ async def _eth_bnb_dlg(update: Update, msg: str) -> int:
     keyboard = [
         [
             InlineKeyboardButton("ETH", callback_data="funcETH"),
+            InlineKeyboardButton("BNB", callback_data="funcBNB"),
             InlineKeyboardButton("TOKEN", callback_data="funcToken"),
         ],
         [
@@ -2091,7 +2098,7 @@ def setInterval(func: any, sec: int) -> None:
 
 
 def getWeb3() -> None:
-    eth_infura_url = "https://goerli.infura.io/v3/" + INFURA_ID
+    eth_infura_url = "https://sepolia.infura.io/v3/" + INFURA_ID
     global g_ETH_Web3
     g_ETH_Web3 = Web3(Web3.HTTPProvider(eth_infura_url))
 
