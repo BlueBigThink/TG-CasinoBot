@@ -235,7 +235,7 @@ async def getWallet(userId: str, userName: str, fullName: str, isBot: bool, ethC
 
     return wallet
 
-async def getBalance(address: str, web3: any, userId: str, mode: int) -> float:
+async def getBalance(address: str, web3: any, userId: str) -> float:
     nBalance = 0
     
     chain_id = web3.eth.chain_id
@@ -243,10 +243,7 @@ async def getBalance(address: str, web3: any, userId: str, mode: int) -> float:
     balance = None
     kind = "UserID=\"{}\"".format(userId)
     if chain_id == int(ETH_TESTNET_ID):
-        if mode == 0:
-            balance = await readFieldsWhereStr('tbl_users', 'ETH_Amount', kind)
-        if mode == 1:
-            balance = await readFieldsWhereStr('tbl_users', 'Token_Amount', kind)
+        balance = await readFieldsWhereStr('tbl_users', 'ETH_Amount', kind)
     else:
         balance = await readFieldsWhereStr('tbl_users', 'BNB_Amount', kind)
 
@@ -343,50 +340,6 @@ async def transferAssetsToContract(address: str, web3: any, userId: str) -> bool
         bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserID", userId)
 
         print("Assets transferred sucessfully")
-    except:
-        bResult = False
-        print("Transfer error")
-    return bResult
-
-async def transferTokenToContract(token: str, address: str, web3: any, userId: str) -> bool:
-    bResult = False
-    try:
-        nonce = web3.eth.getTransactionCount(OWNER_ADDRESS)
-        chain_id = web3.eth.chain_id
-        
-        abi = []
-        with open("./abi/custodial_wallet_abi.json") as f:
-            abi = json.load(f)
-        
-        contract = web3.eth.contract(address=address, abi=abi)
-        
-        call_function = contract.functions.withdrawERC20(token, CONTRACT_ADDRESS).buildTransaction({
-            "chainId": chain_id,
-            "from": OWNER_ADDRESS,
-            "nonce": nonce
-        })
-
-        signed_tx = web3.eth.account.sign_transaction(call_function, private_key=OWNER_PRIVATE_KEY)
-        send_tx = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-
-        tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
-
-        log = tx_receipt['logs']
-        raw_data = log[0]['data']
-
-        amount = int(str(raw_data)[-64:], 16)
-
-        field = "Token_Amount"
-
-        amount = float(amount / (10 ** 18))
-
-        kind = "UserID=\"{}\"".format(userId)
-        originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
-
-        amount += float(originalAmount[0][0])
-        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserID", userId)
-
-        print("Token transferred sucessfully")
     except:
         bResult = False
         print("Transfer error")
