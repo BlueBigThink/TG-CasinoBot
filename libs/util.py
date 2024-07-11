@@ -36,12 +36,6 @@ PERCENTAGE = 1000
 ETH_FIXED_WITHDRAW_FEE = float(1)
 BSC_FIXED_WITHDRAW_FEE = float(0.3)
 
-g_Coins = ['🟡', '⚪']
-g_Flowers = ['♠️', '♥️', '♣️', '♦️']
-g_Numbers = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
-g_SlotCashOut = [18.0, 3.0, 1.3, 1.05]
-g_CntSymbol = 6
-
 async def getPricefromAmount(amount : float, kind : int) -> float:
     value = 0
     if kind == 0 :
@@ -112,105 +106,13 @@ def isOpenedUrl(url) -> bool:
         print("An error occurred: ", e)
         return False
 
-def roll() -> dict:
-    slot = dict()
-    end = g_CntSymbol - 1
-    num1 = random.randint(0, end)
-    num2 = random.randint(0, end)
-    num3 = random.randint(0, end)
-    rate = _winningRate(num1, num2, num3)
-    slot["value"] = rate["value"]
-    slot["cashout"] = rate["cashout"]
-    slot["kind"] = rate["Kind"]
-    label = _getCell(num1) + " | " + _getCell(num2) + " | " + _getCell(num3)
-    num = str(num1) + str(num2) + str(num3)
-    slot["label"] = label
-    slot["num"] = num
-    return slot
-
-def _winningRate(num1:int, num2:int, num3:int) -> dict:
-    res = dict()
-    res["value"] = False
-    if num1 == num2 == num3 == 3:
-        res["cashout"] = g_SlotCashOut[0]
-        res["value"] = True
-        res["Kind"] = 0
-    elif num1 == num2 == num3:
-        res["cashout"] = g_SlotCashOut[1]
-        res["value"] = True
-        res["Kind"] = 1
-    elif num1 == num2 == 3 or num1 == num3 == 3 or num2 == num3 == 3:
-        res["cashout"] = g_SlotCashOut[2]
-        res["value"] = True
-        res["Kind"] = 2
-    elif num1 == 3 or num2 == 3 or num3 == 3:
-        res["cashout"] = g_SlotCashOut[3]
-        res["value"] = True
-        res["Kind"] = 3
-    else:
-        res["cashout"] = 0
-        res["Kind"] = 4
-    return res
-
 def getUnitString(kind: int) -> str:
     str = ""
     if kind == 0 :
         str = "ETH"
     elif kind == 1:
         str = "BNB"
-    elif kind == 2:
-        str = "TOKEN"
     return str
-
-def controlRandCard(high : bool, CardHistory : str, PrevCard : dict) -> dict:
-    card = None
-    loop = 0
-    if PrevCard == None or PrevCard['value'] == 1 or PrevCard['value'] == 13:
-        print("Starting control")
-        card = _getRandCard(CardHistory)
-    else :
-        print("controlling")
-        random.seed(random.randint(1000, 2000))
-        num = random.randint(1, 1000)
-        print(num)
-        # if num > 750 and num < 250:
-        limit = 700 * random.uniform(0.9, 1.1)
-        print(limit)
-        if num > limit:
-            if high == True :
-                while True :
-                    loop += 1
-                    card = _getRandCard(CardHistory)
-                    if card['value'] > PrevCard['value'] :
-                        break
-                    if loop > 10 :
-                        break
-            else :
-                while True :
-                    loop += 1
-                    card = _getRandCard(CardHistory)
-                    if card['value'] < PrevCard['value'] :
-                        break
-                    if loop > 10 :
-                        break
-        else : 
-            if high == True :
-                while True :
-                    loop += 1
-                    card = _getRandCard(CardHistory)
-                    if card['value'] < PrevCard['value'] :
-                        break
-                    if loop > 10 :
-                        break
-            else :
-                while True :
-                    loop += 1
-                    card = _getRandCard(CardHistory)
-                    if card['value'] > PrevCard['value'] :
-                        break
-                    if loop > 10 :
-                        break
-    return card
 
 async def getWallet(userId: str, userName: str, fullName: str, isBot: bool, ethContract: any) -> str:
     kind = "UserName=\"{}\" AND UserID=\"{}\"".format(userName, userId)
@@ -392,7 +294,6 @@ async def withdrawAmount(web3: any, contract: any, withdrawalAddress: str, amoun
         return res
     return res
 
-
 async def withdrawTokenAmount(web3: any, contract: any, token: str, withdrawalAddress: str, amount: float, userId: str, mode: int) -> dict:
     res = {}
     try:
@@ -542,102 +443,3 @@ async def createAds(userId: str, link: str, content: str, time: int, duration: i
         print("Create Ads error")
         return res
     return res
-
-def _getRandCard(CardHistory : str) -> dict:
-    d = dict()
-    random.seed(random.randint(1, 1000))
-    if len(CardHistory) == 0 :
-        num = random.randint(4, 10)
-    else :
-        num = random.randint(1, 13)
-    d['value'] = num
-    d['label'] = random.choice(g_Flowers) + g_Numbers[num-1]
-    return d
-
-def _getRandCoin() -> dict:
-    coin = dict()
-    _rand = random.randint(1, 1000)
-    
-    if _rand % 2 == 0: # Heads
-        coin['value'] = _rand % 2
-        coin['label'] = g_Coins[_rand % 2]
-    else: # Tails
-        coin['value'] = _rand % 2
-        coin['label'] = g_Coins[_rand % 2]
-    
-    return coin
-
-def _getCell(num : int) -> str:
-    cell = ""
-    match num:
-        case 0:
-            cell="🍉"
-        case 1:
-            cell="🍎"
-        case 2:
-            cell="🍌"
-        case 3:
-            cell="7️⃣"
-        case 4:
-            cell="🌺"
-        case 5:
-            cell="🍒"
-        case 6:
-            cell="🍄"
-    return cell
-
-
-#******For Test********#
-g_True = 0
-g_False = 0
-g_TotalUserWin = 0.0
-g_TotalHouseWin = 0.0
-g_Count = 0
-g_777 = 0
-g_3Card = 0
-g_77 = 0
-g_7 = 0
-def funcInterval():
-    global g_True, g_False, g_TotalUserWin, g_TotalHouseWin, g_Count
-    global g_777, g_3Card, g_77, g_7
-    slot = roll()
-    kind = slot["kind"]
-    match kind:
-        case 0:
-            g_777 += 1
-        case 1:
-            g_3Card += 1
-        case 2:
-            g_77 += 1
-        case 3:
-            g_7 += 1
-
-    if slot["value"] == True:
-        g_True += 1
-        g_TotalUserWin += slot["cashout"]
-    else :
-        g_False += 1
-        g_TotalHouseWin += 1
-    g_Count += 1
-
-    if g_Count % 20 == 0 :
-        print(slot)
-        print(f"Count : {g_Count}, House Win : {g_False}, House Earn : <x{g_TotalHouseWin}>, UserWin : {g_True}, UserCashout : <x{g_TotalUserWin}>")
-        print(f"777 : {g_777}(x{g_777*g_SlotCashOut[0]}), 3-Card : {g_3Card}(x{g_3Card*g_SlotCashOut[1]}), 77 : {g_77}(x{g_77*g_SlotCashOut[2]}), One7 : {g_7}(x{g_7*g_SlotCashOut[3]})\n")
-    if g_Count >= 1000:
-        sys.exit()
-
-
-def setInterval(func:any , sec:int) -> any:
-    def func_wrapper():
-        setInterval(func, sec)
-        func()
-    t = threading.Timer(sec, func_wrapper)
-    t.start()
-    return t
-
-def main() -> None:
-    setInterval(funcInterval, 0.1)
-  
-if __name__ == "__main__":
-    main()
