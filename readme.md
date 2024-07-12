@@ -1,3 +1,3 @@
 ##Flask
 
-flask --app server sun --host=0.0.0.0
+flask --app server run --host=0.0.0.0

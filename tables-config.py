@@ -11,6 +11,8 @@ def table():
         db.commit()
         cur.execute("CREATE TABLE tbl_ads(id INT AUTO_INCREMENT Primary Key, UserID LONG, Url TEXT, Content TEXT, Time INT DEFAULT(0), Duration INT DEFAULT(0), Expired bool DEFAULT(FALSE), StartTime TIMESTAMP DEFAULT(CURRENT_TIMESTAMP), CreatedAt TIMESTAMP DEFAULT(CURRENT_TIMESTAMP), ExpiredAt TIMESTAMP DEFAULT(CURRENT_TIMESTAMP))")
         db.commit()
+        cur.execute("CREATE TABLE tbl_coinflip(id INT AUTO_INCREMENT Primary Key, user_id LONG, server_hash VARCHAR(255), secret_seed VARCHAR(100), nonce LONG, parent_id INT DEFAULT(0), straight Long, is_expire_token VARCHAR(255), coin_result VARCHAR(5), win bool DEFAULT(FALSE), winning_rate FLOAT DEFAULT(0), cashout FLOAT DEFAULT(0), bet_time TIMESTAMP DEFAULT(CURRENT_TIMESTAMP))")
+        db.commit()
         cur.execute("UPDATE tbl_cryptos SET Price=1700 WHERE id=1")
         db.commit()
         cur.execute("UPDATE tbl_cryptos SET Price=300 WHERE id=2")
