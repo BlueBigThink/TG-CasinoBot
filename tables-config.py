@@ -1,6 +1,6 @@
 import mysql.connector
 
-db = mysql.connector.connect(host = "localhost", user = "root", passwd = "", database = "DB_AleekkCasino")
+db = mysql.connector.connect(host = "bbt-mysql-bluebigthink.f.aivencloud.com", user = "avnadmin", passwd = "AVNS_eH5lhulxL-_04Z-MH96", port=22945, database = "DB_AleekkCasino")
 cur = db.cursor()
 
 def table():

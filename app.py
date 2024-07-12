@@ -143,7 +143,7 @@ logger = logging.getLogger(__name__)
 
 def log_loop(poll_interval, userId, wallet, tokenMode):
     while True:
-        field = "UserID=\"{}\"".format(userId)
+        field = "UserID='{}'".format(userId)
         if tokenMode == ETH:
             onChainEthBalance = g_ETH_Web3.eth.getBalance(wallet)
             if onChainEthBalance > 0:
@@ -254,7 +254,7 @@ async def _wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     userId = query.from_user.id
 
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
     wallet = await readFieldsWhereStr("tbl_users", "Wallet", kind)
 
     address = wallet[0][0]
@@ -362,7 +362,7 @@ async def funcETH(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     userId = query.from_user.id
     g_UserStatus[userId]['tokenMode'] = ETH
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
     wallet = await readFieldsWhereStr("tbl_users", "Wallet", kind)
 
     address = wallet[0][0]
@@ -402,7 +402,7 @@ async def funcBNB(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     userId = query.from_user.id
     g_UserStatus[userId]['tokenMode'] = BNB
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
     wallet = await readFieldsWhereStr("tbl_users", "Wallet", kind)
 
     address = wallet[0][0]
@@ -440,7 +440,7 @@ async def panelDeposit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     query = update.callback_query
     userId = query.from_user.id
 
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
     wallet = await readFieldsWhereStr("tbl_users", "Wallet", kind)
 
     address = wallet[0][0]
@@ -470,7 +470,7 @@ async def panelWithdrawAddress(update: Update, context: ContextTypes.DEFAULT_TYP
         return
 
     userId = update.message.from_user['id']
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
 
     amount = text.split('/')[1]
 
@@ -626,7 +626,7 @@ async def _adsBoard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     current_hour = current_utc_time.hour
 
-    # kind = "UserID=\"{}\"".format(userId)
+    # kind = "UserID='{}'".format(userId)
     keyboard = []
     btnHome = [InlineKeyboardButton("Home", callback_data="Cancel")]
 
@@ -870,10 +870,10 @@ async def _board(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # get all adsContent from database
     adsContent = ""
 
-    ethPrice = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'eth\'')
+    ethPrice = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='eth'")
     ethPrice = ethPrice[0][0]
 
-    bnbPrice = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'bnb\'')
+    bnbPrice = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='bnb'")
     bnbPrice = bnbPrice[0][0]
 
     topWagered = await getTopFieldsByLimit('tbl_users', f'UserName, {ethPrice} * ETH_Wagered + {bnbPrice} * BNB_Wagered AS Total_Wagered', 'Total_Wagered', 5)

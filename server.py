@@ -5,6 +5,11 @@ import hashlib
 import random
 import jwt
 import datetime
+from OpenSSL import SSL
+
+context = SSL.Context(SSL.PROTOCOL_TLSv1_2)
+context.use_privatekey_file('server.key')
+context.use_certificate_file('server.crt')   
 
 app = Flask(__name__)
 CORS(app)
@@ -70,7 +75,7 @@ def bet_coinflip():
     coin_type = data['coin_type']
     bet_amount = data['bet_amount']
     print("Bet Amount =================={}".format(bet_amount))
-    
+
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM tbl_users WHERE UserID=%s", (UserID,))
     user = cursor.fetchone()
@@ -101,4 +106,4 @@ def bet_coinflip():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', debug=True, ssl_context=context)

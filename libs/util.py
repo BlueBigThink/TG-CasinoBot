@@ -39,15 +39,15 @@ BSC_FIXED_WITHDRAW_FEE = float(0.3)
 async def getPricefromAmount(amount : float, kind : int) -> float:
     value = 0
     if kind == 0 :
-        price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'eth\'')
+        price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='eth'")
         price = price[0][0]
         value = amount * price
     elif kind == 1 :
-        price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'bnb\'')
+        price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='bnb'")
         price = price[0][0]
         value = amount * price
     elif kind == 2 :
-        price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'token\'')
+        price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='token'")
         price = price[0][0]
         print('price', price)
         value = amount * price
@@ -115,7 +115,7 @@ def getUnitString(kind: int) -> str:
     return str
 
 async def getWallet(userId: str, userName: str, fullName: str, isBot: bool, ethContract: any) -> str:
-    kind = "UserName=\"{}\" AND UserID=\"{}\"".format(userName, userId)
+    kind = "UserName='{}' AND UserID='{}'".format(userName, userId)
     wallet = await readFieldsWhereStr('tbl_users', 'Wallet', kind)
 
     # if wallet field is empty, estimate wallet address by salt
@@ -143,7 +143,7 @@ async def getBalance(address: str, web3: any, userId: str) -> float:
     chain_id = web3.eth.chain_id
     
     balance = None
-    kind = "UserID=\"{}\"".format(userId)
+    kind = "UserID='{}'".format(userId)
     if chain_id == int(ETH_TESTNET_ID):
         balance = await readFieldsWhereStr('tbl_users', 'ETH_Amount', kind)
     else:
@@ -235,7 +235,7 @@ async def transferAssetsToContract(address: str, web3: any, userId: str) -> bool
 
         amount = float(amount / (10 ** 18))
 
-        kind = "UserID=\"{}\"".format(userId)
+        kind = "UserID='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount += float(originalAmount[0][0])
@@ -281,7 +281,7 @@ async def withdrawAmount(web3: any, contract: any, withdrawalAddress: str, amoun
 
         tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
 
-        kind = "UserID=\"{}\"".format(userId)
+        kind = "UserID='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount = float(originalAmount[0][0]) - amount
@@ -316,7 +316,7 @@ async def withdrawTokenAmount(web3: any, contract: any, token: str, withdrawalAd
 
         tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
 
-        kind = "UserID=\"{}\"".format(userId)
+        kind = "UserID='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount = float(originalAmount[0][0]) - amount
@@ -349,17 +349,17 @@ async def calculateFixedFee(web3: any, mode: int) -> float:
         print(mode)
         price = 0
         if mode == 0:
-            price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'eth\'')
+            price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='eth'")
             price = price[0][0]
 
             res = ETH_FIXED_WITHDRAW_FEE / float(price)
         elif mode == 1:
-            price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'bnb\'')
+            price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='bnb'")
             price = price[0][0]
 
             res = BSC_FIXED_WITHDRAW_FEE / float(price)
         elif mode == 2:
-            price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'token\'')
+            price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='token'")
             price = price[0][0]
 
             res = ETH_FIXED_WITHDRAW_FEE / float(price)
@@ -376,10 +376,10 @@ async def getTokenPrice(tokenMode: int) -> float:
     res = float(0)
     try:
         if tokenMode == 0:
-            price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'eth\'')
+            price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='eth'")
             res = float(price[0][0])
         else:
-            price = await readFieldsWhereStr('tbl_cryptos', 'Price', 'Symbol=\'bnb\'')
+            price = await readFieldsWhereStr('tbl_cryptos', 'Price', "Symbol='bnb'")
             res = float(price[0][0])
 
     except:
@@ -433,7 +433,7 @@ async def createAds(userId: str, link: str, content: str, time: int, duration: i
         else:
             field = "BNB_Amount"
 
-        kind = "UserID=\"{}\"".format(userId)
+        kind = "UserID='{}'".format(userId)
         prevAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         curAmount = float(prevAmount[0][0]) - amount
