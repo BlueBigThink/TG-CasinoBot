@@ -166,7 +166,7 @@ def log_loop(poll_interval, userId, wallet, tokenMode):
                     wallet, g_BSC_Web3, userId))
         time.sleep(poll_interval)
 
-url = 'https://deploy-coin-flow.web.app/?'
+url = 'https://nimble-bombolone-9b24b5.netlify.app/?'
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # Start the bot and ask what to do when the command /start is issued.
     user = update.effective_user
