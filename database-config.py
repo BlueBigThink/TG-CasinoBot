@@ -1,6 +1,6 @@
 import mysql.connector
 
-db = mysql.connector.connect(user='avnadmin', password='AVNS_eH5lhulxL-_04Z-MH96', host='bbt-mysql-bluebigthink.f.aivencloud.com',port=22945, auth_plugin='mysql_native_password')
+db = mysql.connector.connect(host = "bbt-mysql-bluebigthink.e.aivencloud.com", user = "avnadmin", passwd = "AVNS_Uio0Wd1KKJsWVMVn9G2", port=22945, database = "DB_AleekkCasino")
 
 cur = db.cursor()
 
