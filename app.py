@@ -167,6 +167,7 @@ def log_loop(poll_interval, userId, wallet, tokenMode):
         time.sleep(poll_interval)
 
 url = 'https://nimble-bombolone-9b24b5.netlify.app/?'
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # Start the bot and ask what to do when the command /start is issued.
     user = update.effective_user
@@ -180,7 +181,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     fullName = "{} {}".format(firstName, lastName)
     isBot = userInfo['is_bot']
     coinflip_url = url + "name={}&username={}&user_id={}&navigate=coinflip".format(fullName, userName, userId )
-    print(coinflip_url)
+    slot_url = url + "name={}&username={}&user_id={}&navigate=slot".format(fullName, userName, userId )
     wallet = await getWallet(userId, userName, fullName, isBot, g_BSC_Contract)
     # wallet = await getWallet(userId, userName, fullName, isBot, g_ETH_Contract)
 
@@ -233,7 +234,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         [
             InlineKeyboardButton("Play Hilo", callback_data="Play Hilo"),
             InlineKeyboardButton("Play CoinFlip", web_app=WebAppInfo(coinflip_url)),
-            InlineKeyboardButton("Play Slot", callback_data="Play Slot"),
+            InlineKeyboardButton("Play Slot", web_app=WebAppInfo(slot_url)),
         ],
         [
             InlineKeyboardButton("LeaderBoard", callback_data="Board"),
