@@ -1,7 +1,8 @@
 import mysql.connector
 
-# db = mysql.connector.connect(host = "localhost",user = "root",passwd = "bluesky0812",auth_plugin='mysql_native_password')
-db = mysql.connector.connect(user='root', password='', host='localhost', auth_plugin='mysql_native_password')
+from environment import DB_HOST, DB_USER, DB_PWD, DB_PORT, DB_DATABASE
+
+db = mysql.connector.connect(host = DB_HOST, user = DB_USER, passwd = DB_PWD, port=DB_PORT, database = DB_DATABASE)
 
 cur = db.cursor()
 
