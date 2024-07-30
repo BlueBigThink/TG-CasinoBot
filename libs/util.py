@@ -19,16 +19,8 @@ from libs.db import (
 from urllib.request import urlopen
 from urllib.error import URLError
 import datetime
-from dotenv.main import load_dotenv
-import os
 
-load_dotenv()   
-
-OWNER_ADDRESS = os.environ['OWNER_ADDRSS']
-OWNER_PRIVATE_KEY = os.environ['OWNER_PRIVATE_KEY']
-CONTRACT_ADDRESS = os.environ['ETH_CONTRACT_ADDRESS']
-ETH_TESTNET_ID = os.environ['ETH_TESTNET_ID']
-ETH_MAINNET_ID = os.environ['ETH_MAINNET_ID']
+from environment import OWNER_ADDRESS, OWNER_PRIVATE_KEY, CONTRACT_ADDRESS, ETH_TESTNET_ID, ETH_MAINNET_ID
 
 HOUSE_CUT_FEE = 50
 PERCENTAGE = 1000
@@ -115,7 +107,7 @@ def getUnitString(kind: int) -> str:
     return str
 
 async def getWallet(userId: str, userName: str, fullName: str, isBot: bool, ethContract: any) -> str:
-    kind = "UserName='{}' AND UserID='{}'".format(userName, userId)
+    kind = "UserId='{}'".format(userId)
     wallet = await readFieldsWhereStr('tbl_users', 'Wallet', kind)
 
     # if wallet field is empty, estimate wallet address by salt
@@ -125,7 +117,7 @@ async def getWallet(userId: str, userName: str, fullName: str, isBot: bool, ethC
         field = {
             "RealName": fullName,
             "UserName": userName,
-            "UserID": userId,
+            "UserId": userId,
             "Wallet": wallet,
             "UserAllowed": not isBot,
             "JoinDate": datetime.datetime.now()
@@ -143,7 +135,7 @@ async def getBalance(address: str, web3: any, userId: str) -> float:
     chain_id = web3.eth.chain_id
     
     balance = None
-    kind = "UserID='{}'".format(userId)
+    kind = "UserId='{}'".format(userId)
     if chain_id == int(ETH_TESTNET_ID):
         balance = await readFieldsWhereStr('tbl_users', 'ETH_Amount', kind)
     else:
@@ -182,7 +174,7 @@ async def deploySmartContract(web3: any, contract: any, userId: str) -> bool:
 
         tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
         
-        bResult = await updateSetFloatWhereStr("tbl_users", field, True, "UserID", userId)
+        bResult = await updateSetFloatWhereStr("tbl_users", field, True, "UserId", userId)
         print("Smart Contract deployed sucessfully")
     except:
         bResult = False
@@ -235,11 +227,11 @@ async def transferAssetsToContract(address: str, web3: any, userId: str) -> bool
 
         amount = float(amount / (10 ** 18))
 
-        kind = "UserID='{}'".format(userId)
+        kind = "UserId='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount += float(originalAmount[0][0])
-        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserID", userId)
+        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserId", userId)
 
         print("Assets transferred sucessfully")
     except:
@@ -281,12 +273,12 @@ async def withdrawAmount(web3: any, contract: any, withdrawalAddress: str, amoun
 
         tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
 
-        kind = "UserID='{}'".format(userId)
+        kind = "UserId='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount = float(originalAmount[0][0]) - amount
 
-        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserID", userId)
+        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserId", userId)
 
         res = tx_receipt
     except:
@@ -316,12 +308,12 @@ async def withdrawTokenAmount(web3: any, contract: any, token: str, withdrawalAd
 
         tx_receipt = web3.eth.wait_for_transaction_receipt(send_tx)
 
-        kind = "UserID='{}'".format(userId)
+        kind = "UserId='{}'".format(userId)
         originalAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         amount = float(originalAmount[0][0]) - amount
 
-        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserID", userId)
+        bResult = await updateSetFloatWhereStr("tbl_users", field, amount, "UserId", userId)
 
         res = tx_receipt
     except:
@@ -416,7 +408,7 @@ async def createAds(userId: str, link: str, content: str, time: int, duration: i
         expired_local_time = booked_local_time.replace(hour=booked_local_time.hour + duration)
 
         field = {
-            "UserID": userId,
+            "UserId": userId,
             "Url": link,
             "Content": content,
             "Time": time,
@@ -433,12 +425,12 @@ async def createAds(userId: str, link: str, content: str, time: int, duration: i
         else:
             field = "BNB_Amount"
 
-        kind = "UserID='{}'".format(userId)
+        kind = "UserId='{}'".format(userId)
         prevAmount = await readFieldsWhereStr('tbl_users', field, kind)
 
         curAmount = float(prevAmount[0][0]) - amount
 
-        res = await updateSetFloatWhereStr("tbl_users", field, curAmount, "UserID", userId)
+        res = await updateSetFloatWhereStr("tbl_users", field, curAmount, "UserId", userId)
     except:
         print("Create Ads error")
         return res

@@ -21,23 +21,14 @@ import time
 import pytz
 # import telegram
 from web3 import Web3, IPCProvider
-from telegram import __version__ as TG_VER
-from dotenv.main import load_dotenv
-import os
 
 try:
     from telegram import __version_info__
 except ImportError:
     __version_info__ = (0, 0, 0, 0, 0)  # type: ignore[assignment]
 
-if __version_info__ < (20, 0, 0, "alpha", 5):
-    raise RuntimeError(
-        f"This example is not compatible with your current PTB version {TG_VER}. To view the "
-        f"{TG_VER} version of this example, "
-        f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
-    )
 from telegram import (
-    ForceReply,
+#    ForceReply,
     ReplyKeyboardRemove,
     Update,
     InlineKeyboardButton,
@@ -59,7 +50,6 @@ from telegram.ext import (
 
 # from telebot import TeleBot
 
-from telegram_bot_calendar import DetailedTelegramCalendar, LSTEP
 
 from libs.util import (
     getPricefromAmount,
@@ -89,16 +79,8 @@ from libs.util import (
     insertFields
 )
 
-load_dotenv()
-
-ETH_CONTRACT_ADDRESS = os.environ['ETH_CONTRACT_ADDRESS']
-BSC_CONTRACT_ADDRESS = os.environ['BSC_CONTRACT_ADDRESS']
-TEST_ETH_SCAN_URI = os.environ['TEST_ETH_SCAN_URL']
-TEST_BSC_SCAN_URI = os.environ['TEST_BSC_SCAN_URL']
-INFURA_ID = os.environ['INFURA_ID']
-BOT_TOKEN = os.environ['BOT_TOKEN']
-OWNER_ADDRESS = os.environ['OWNER_ADDRSS']
-
+from environment import ETH_CONTRACT_ADDRESS, BSC_CONTRACT_ADDRESS, TEST_ETH_SCAN_URL, TEST_BSC_SCAN_URL, INFURA_ID, BOT_TOKEN, OWNER_ADDRESS
+ 
 MAIN, SELECT, STATUS, PAYMENT, DISPLAY, COPY, PANELDEPOSIT, PANELWITHDRAW, PANELWITHDRAWADDRESS, PANELADVERTISE, CANCEL, ADSTIME, ADSURL, ADSDESC, ADSCONFIRM, ADSPAY, ADSPAYCONFIRM = range(17)
 ST_DEPOSIT, ST_WITHDRAW, ST_HILO, ST_COINFLIP, ST_SLOT, ST_ADS_PAY = range(6)
 ETH, BNB = range(2)
@@ -166,8 +148,7 @@ def log_loop(poll_interval, userId, wallet, tokenMode):
                     wallet, g_BSC_Web3, userId))
         time.sleep(poll_interval)
 
-url = 'https://nimble-bombolone-9b24b5.netlify.app/?'
-
+url = 'https://luminous-axolotl-9382ce.netlify.app/?'
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # Start the bot and ask what to do when the command /start is issued.
     user = update.effective_user
@@ -180,8 +161,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lastName = userInfo['last_name']
     fullName = "{} {}".format(firstName, lastName)
     isBot = userInfo['is_bot']
+
+    plinko_url = url + "name={}&username={}&user_id={}&navigate=plinko".format(fullName, userName, userId )
     coinflip_url = url + "name={}&username={}&user_id={}&navigate=coinflip".format(fullName, userName, userId )
     slot_url = url + "name={}&username={}&user_id={}&navigate=slot".format(fullName, userName, userId )
+
     wallet = await getWallet(userId, userName, fullName, isBot, g_BSC_Contract)
     # wallet = await getWallet(userId, userName, fullName, isBot, g_ETH_Contract)
 
@@ -227,19 +211,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     keyboard = [
         [
-            InlineKeyboardButton("Deposit", callback_data="Deposit"),
-            InlineKeyboardButton("Withdraw", callback_data="Withdraw"),
-            InlineKeyboardButton("Balance", callback_data="Balance"),
+            InlineKeyboardButton("⬇️ Deposit", callback_data="Deposit"),
+            InlineKeyboardButton("⬆️ Withdraw", callback_data="Withdraw"),
         ],
         [
-            InlineKeyboardButton("Play Hilo", callback_data="Play Hilo"),
-            InlineKeyboardButton("Play CoinFlip", web_app=WebAppInfo(coinflip_url)),
-            InlineKeyboardButton("Play Slot", web_app=WebAppInfo(slot_url)),
+            InlineKeyboardButton("💳 Balance", callback_data="Balance"),
         ],
         [
-            InlineKeyboardButton("LeaderBoard", callback_data="Board"),
-            InlineKeyboardButton("Help", callback_data="Help"),
+            InlineKeyboardButton("🪀  Play Plinko", web_app=WebAppInfo(plinko_url)),
+            InlineKeyboardButton("🟡  Play CoinFlip", web_app=WebAppInfo(coinflip_url)),
+            InlineKeyboardButton("🎰  Play Slot", web_app=WebAppInfo(slot_url)),
         ]
+#        [
+#            InlineKeyboardButton("LeaderBoard", callback_data="Board"),
+#            InlineKeyboardButton("Help", callback_data="Help"),
+#        ]
     ]
     await update.message.reply_text(
         str_Greetings + str_Intro + "What would you like to do?",
@@ -565,11 +551,11 @@ async def panelWithdraw(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     if tokenMode == ETH:
         w3 = g_ETH_Web3
         contract = g_ETH_Contract
-        scanUri = TEST_ETH_SCAN_URI
+        scanUri = TEST_ETH_SCAN_URL
     else:
         w3 = g_BSC_Web3
         contract = g_BSC_Contract
-        scanUri = TEST_BSC_SCAN_URI
+        scanUri = TEST_BSC_SCAN_URL
 
     if not len(text.split('/')) == 2:
         await update.message.reply_text(
