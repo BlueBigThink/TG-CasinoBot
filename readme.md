@@ -1,5 +1,5 @@
-##Flask
+## Bot Server
 
-flask --app server run --host=0.0.0.0 --debug  --cert=adhoc
+python app.py
 
-waitress-serve --host 0.0.0.0 server:app
+python price.py
